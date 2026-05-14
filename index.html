@@ -2,470 +2,489 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ghép ảnh vào khung – bản MVP</title>
-  <style>
-    :root{
-      --bg:#0f172a; --panel:#111827; --muted:#334155; --text:#e5e7eb; --accent:#22d3ee;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b1023,#0f172a);color:var(--text)}
-    header{padding:16px 20px;border-bottom:1px solid #1f2937;background:rgba(17,24,39,.7);backdrop-filter: blur(8px);position:sticky;top:0;z-index:10}
-    h1{margin:0;font-size:18px;font-weight:700}
-    .app{display:grid;grid-template-columns: 320px 1fr;gap:16px;padding:16px}
-    @media (max-width:1000px){.app{grid-template-columns:1fr}}
-    .card{background:linear-gradient(180deg,#0b1226,#0c142b);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .card h2{font-size:16px;margin:0 0 8px 0}
-    .left{padding:16px;display:flex;flex-direction:column;gap:12px}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    label{font-size:12px;color:#cbd5e1}
-    input[type="file"],input[type="text"],select{width:100%;padding:10px;border-radius:10px;border:1px solid #1f2937;background:#0b1226;color:var(--text)}
-    button{padding:10px 12px;border-radius:999px;border:1px solid #1f2937;background:#0b1226;color:var(--text);cursor:pointer}
-    button.primary{background:linear-gradient(135deg,#1cd6d1,#6ee7b7);color:#0b1226;border:none;font-weight:700}
-    button.ghost{background:transparent;border:1px dashed #334155}
-    .slider{appearance:none;width:100%;height:6px;border-radius:999px;background:#0b1226;outline:none}
-    .slider::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#22d3ee;border:2px solid #0b1226}
-    .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
-    .thumb{position:relative;border:1px solid #1f2937;border-radius:12px;overflow:hidden;background:#0b1226;cursor:pointer}
-    .thumb img{width:100%;display:block}
-    .thumb.active{outline:2px solid #22d3ee}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wheel Random Picker</title>
 
-    .stage-wrap{position:relative}
-    .stage{aspect-ratio:1/1;width:100%;background:#000;border-radius:16px;overflow:hidden;border:1px solid #1f2937}
-    canvas{width:100%;height:100%;display:block;background:#0a0a0a}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
-    .pill{background:#0b1226;border:1px solid #1f2937;border-radius:999px;padding:8px 10px;display:flex;gap:6px;align-items:center}
-    .grow{flex:1}
-    .hint{font-size:12px;color:#a1a1aa}
-    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;background:#0b1226;border:1px solid #1f2937;border-radius:6px;padding:2px 6px;}
-    footer{padding:12px 16px;color:#9ca3af;font-size:12px}
-  </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Be Vietnam Pro',sans-serif;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top,#2b2b5a 0%,#121224 40%,#080811 100%);
+    color:white;
+    overflow-x:hidden;
+}
+
+.container{
+    max-width:1300px;
+    margin:auto;
+    padding:30px;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.title h1{
+    font-size:48px;
+    font-weight:800;
+    letter-spacing:-1px;
+    margin-bottom:10px;
+}
+
+.title p{
+    opacity:0.7;
+}
+
+.main{
+    display:grid;
+    grid-template-columns:420px 1fr;
+    gap:30px;
+}
+
+.panel{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:28px;
+    backdrop-filter:blur(14px);
+    padding:24px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.35);
+}
+
+textarea{
+    width:100%;
+    height:420px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:18px;
+    color:white;
+    padding:18px;
+    font-size:15px;
+    resize:none;
+    outline:none;
+    line-height:1.7;
+}
+
+.controls{
+    margin-top:18px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+input{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.1);
+    color:white;
+    border-radius:14px;
+    padding:14px;
+    width:120px;
+    font-size:16px;
+}
+
+button{
+    border:none;
+    border-radius:16px;
+    padding:14px 22px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:700;
+    transition:0.25s;
+}
+
+.spin-btn{
+    background:linear-gradient(135deg,#ff7a18,#ffb800);
+    color:#111;
+    flex:1;
+}
+
+.spin-btn:hover{
+    transform:translateY(-2px) scale(1.02);
+}
+
+.clear-btn{
+    background:rgba(255,255,255,0.08);
+    color:white;
+}
+
+.wheel-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+
+.pointer{
+    width:0;
+    height:0;
+    border-left:22px solid transparent;
+    border-right:22px solid transparent;
+    border-top:40px solid #ffffff;
+    position:absolute;
+    top:-10px;
+    z-index:10;
+    filter:drop-shadow(0 0 12px rgba(255,255,255,0.4));
+}
+
+canvas{
+    width:640px;
+    height:640px;
+    max-width:100%;
+    background:transparent;
+}
+
+.result{
+    width:100%;
+    margin-top:24px;
+    background:rgba(255,255,255,0.06);
+    border-radius:22px;
+    padding:22px;
+}
+
+.result h2{
+    margin-bottom:18px;
+}
+
+.winner-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;
+}
+
+.winner{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.08);
+    padding:16px;
+    border-radius:18px;
+    font-weight:700;
+    font-size:18px;
+}
+
+.result-box{
+    width:100%;
+    margin-top:18px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    color:white;
+    padding:14px;
+    font-size:15px;
+    min-height:120px;
+    resize:vertical;
+    outline:none;
+    line-height:1.7;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#ffffff;
+    color:#111;
+    margin-right:10px;
+    font-size:14px;
+}
+
+@media(max-width:980px){
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    .title h1{
+        font-size:36px;
+    }
+
+    canvas{
+        width:100%;
+        height:auto;
+    }
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Ghép ảnh vào khung – bản MVP</h1>
-  </header>
 
-  <div class="app">
-    <!-- Left control panel -->
-    <aside class="card left">
-      <div>
-        <h2>Tải ảnh người dùng</h2>
-        <input id="photoInput" type="file" accept="image/*" />
-        <div class="row">
-          <button id="fitContain">Fit</button>
-          <button id="fitCover">Fill</button>
-          <button id="flipH">Lật ngang</button>
-          <button id="flipV">Lật dọc</button>
-        </div>
-      </div>
+<div class="container">
 
-      <div>
-        <h2>Chọn khung</h2>
-        <div class="thumbs" id="framesGrid"></div>
-        <div class="row">
-          <input id="frameUrl" type="text" placeholder="Dán URL ảnh PNG khung (nền trong suốt)" />
-          <button id="addFrameUrl">Thêm khung</button>
-        </div>
-        <div class="row">
-          <label class="pill">
-            <input id="frameFile" type="file" accept="image/*" />
-          </label>
-          <button id="clearFrame" class="ghost">Bỏ khung</button>
-        </div>
-      </div>
+    <div class="title">
+        <h1>Quay số may mắn "Check in VTC"</h1>
+        <p>Quay ngẫu nhiên những người may mắn đã tham gia sự kiện</p>
+    </div>
 
-      <div>
-        <h2>Tùy chỉnh & xuất</h2>
-        <label>Phóng to / thu nhỏ</label>
-        <input id="scale" class="slider" type="range" min="0.1" max="3" step="0.01" value="1"/>
-        <label>Xoay (độ)</label>
-        <input id="rotation" class="slider" type="range" min="-180" max="180" step="1" value="0"/>
-        <div class="row">
-          <label>Khung hình:</label>
-          <select id="aspect">
-            <option value="1">1:1</option>
-            <option value="0.75">3:4</option>
-            <option value="1.7777777778">16:9</option>
-            <option value="0.5625">9:16</option>
-          </select>
-        </div>
-        <div class="row">
-          <label>Độ phân giải:</label>
-          <select id="resolution">
-            <option value="1024">1024 px (vuông cạnh dài)</option>
-            <option value="2048">2048 px</option>
-            <option value="4096">4096 px</option>
-          </select>
-        </div>
-        <div class="row">
-          <select id="format">
-            <option value="image/png">PNG (nên dùng)</option>
-            <option value="image/jpeg">JPG</option>
-            <option value="image/webp">WEBP</option>
-          </select>
-          <button id="download" class="primary">Tải ảnh đã ghép</button>
-        </div>
-        <div class="hint">Mẹo: kéo thả ảnh trên vùng xem để di chuyển. Giữ <span class="kbd">Shift</span> để khóa trục, <span class="kbd">Alt</span> để quay tinh chỉnh.</div>
-      </div>
-    </aside>
+    <div class="main">
 
-    <!-- Right canvas / stage -->
-    <main class="card">
-      <div class="stage-wrap">
-        <div class="toolbar">
-          <div class="pill">Vị trí X <input id="posX" type="range" class="slider" min="-1000" max="1000" value="0" style="width:180px"></div>
-          <div class="pill">Vị trí Y <input id="posY" type="range" class="slider" min="-1000" max="1000" value="0" style="width:180px"></div>
-          <div class="pill">Độ mờ khung <input id="frameOpacity" type="range" class="slider" min="0" max="1" step="0.01" value="1" style="width:160px"></div>
-          <div class="pill grow">Kéo thả ảnh để căn chỉnh. Dùng con lăn để zoom.</div>
+        <div class="panel">
+
+            <textarea id="names">Thanh Nhã
+Trần Nhi
+Đình Thuận
+Triệu La
+Khánh Giang
+Nguyễn Dung
+Hạ Trang
+Nguyễn Trọng Tài Nhân
+Lít Nhock
+Nguyễn Hoàng Phúc
+Gia Bảo Ngô
+Dilys Huỳnh
+Trần Quân</textarea>
+
+            <div class="controls">
+                <input type="number" id="count" value="3" min="1">
+
+                <button class="spin-btn" onclick="spinWheel()">
+                    🎯 Quay ngay
+                </button>
+
+                <button class="clear-btn" onclick="shuffleNames()">
+                    Shuffle
+                </button>
+
+                <button class="clear-btn" onclick="clearResult()">
+                    Xóa
+                </button>
+            </div>
+
         </div>
-        <div class="stage">
-          <canvas id="canvas"></canvas>
+
+        <div class="panel wheel-wrap">
+
+            <div class="pointer"></div>
+
+            <canvas id="wheel" width="700" height="700"></canvas>
+
+            <div class="result" id="result">
+                <h2>Kết quả</h2>
+                <div class="winner-list">
+                    <div class="winner">Chưa có kết quả</div>
+                </div>
+
+                <textarea class="result-box" id="resultText" readonly>
+Kết quả sẽ hiển thị ở đây để copy
+                </textarea>
+            </div>
+
         </div>
-      </div>
-      <footer>
-        Bản MVP chạy thuần HTML + JS, không cần server. Có thể host lên bất kỳ nơi nào (CPanel, DirectAdmin, Netlify, Vercel...).
-      </footer>
-    </main>
-  </div>
+
+    </div>
+
+</div>
 
 <script>
-(function(){
-  // State
-  const state = {
-    img: null, // user photo Image object
-    frame: null, // frame Image object (PNG with transparency)
-    scale: 1,
-    rotation: 0,
-    x: 0,
-    y: 0,
-    flipH: false,
-    flipV: false,
-    aspect: 1,
-    res: 1024,
-    frameOpacity: 1,
-    frames: [] // gallery
-  };
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
 
-  // Elements
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const photoInput = document.getElementById('photoInput');
-  const scaleEl = document.getElementById('scale');
-  const rotEl = document.getElementById('rotation');
-  const posX = document.getElementById('posX');
-  const posY = document.getElementById('posY');
-  const aspectEl = document.getElementById('aspect');
-  const resEl = document.getElementById('resolution');
-  const formatEl = document.getElementById('format');
-  const downloadBtn = document.getElementById('download');
-  const framesGrid = document.getElementById('framesGrid');
-  const frameUrl = document.getElementById('frameUrl');
-  const addFrameUrl = document.getElementById('addFrameUrl');
-  const frameFile = document.getElementById('frameFile');
-  const clearFrame = document.getElementById('clearFrame');
-  const fitContain = document.getElementById('fitContain');
-  const fitCover = document.getElementById('fitCover');
-  const flipH = document.getElementById('flipH');
-  const flipV = document.getElementById('flipV');
-  const frameOpacity = document.getElementById('frameOpacity');
+let rotation = 0;
+let spinning = false;
 
-  // Helpers
-  function loadImageFromFile(file){
-    return new Promise((resolve,reject)=>{
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        const img = new Image();
-        img.onload = ()=> resolve(img);
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+const colors = [
+    '#ff6b6b',
+    '#feca57',
+    '#48dbfb',
+    '#1dd1a1',
+    '#5f27cd',
+    '#ff9ff3',
+    '#54a0ff',
+    '#00d2d3',
+    '#ff9f43',
+    '#10ac84'
+];
+
+function getNames(){
+    return document.getElementById('names')
+        .value
+        .split('\n')
+        .map(x => x.trim())
+        .filter(x => x !== '');
+}
+
+function shuffle(array){
+    for(let i = array.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function drawWheel(){
+
+    const names = getNames();
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if(names.length === 0){
+        return;
+    }
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 300;
+
+    const slice = (Math.PI * 2) / names.length;
+
+    for(let i = 0; i < names.length; i++){
+
+        const startAngle = rotation + i * slice;
+        const endAngle = startAngle + slice;
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+
+        ctx.save();
+
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + slice / 2);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 20px Be Vietnam Pro';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        let text = names[i];
+
+        if(text.length > 18){
+            text = text.substring(0, 18) + '...';
+        }
+
+        ctx.fillText(text, radius - 20, 0);
+
+        ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 55, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 28px Be Vietnam Pro';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SPIN', centerX, centerY);
+}
+
+function spinWheel(){
+
+    if(spinning){
+        return;
+    }
+
+    const names = getNames();
+
+    if(names.length === 0){
+        alert('Chưa có dữ liệu');
+        return;
+    }
+
+    spinning = true;
+
+    const startRotation = rotation;
+    const extraRotation = (Math.PI * 2 * 8) + (Math.random() * Math.PI * 2);
+    const targetRotation = startRotation + extraRotation;
+
+    const duration = 5000;
+    const startTime = performance.now();
+
+    function animate(currentTime){
+
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        rotation = startRotation + (targetRotation - startRotation) * ease;
+
+        drawWheel();
+
+        if(progress < 1){
+            requestAnimationFrame(animate);
+        }else{
+            rotation = targetRotation % (Math.PI * 2);
+            drawWheel();
+            showResults();
+            spinning = false;
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+function showResults(){
+
+    const names = getNames();
+    const count = parseInt(document.getElementById('count').value) || 1;
+
+    shuffle(names);
+
+    const winners = names.slice(0, Math.min(count, names.length));
+
+    let html = '<h2>🎉 Kết quả</h2>';
+    html += '<div class="winner-list">';
+
+    winners.forEach((name, index) => {
+        html += `
+            <div class="winner">
+                <span class="badge">${index + 1}</span>
+                ${name}
+            </div>
+        `;
     });
-  }
-  function loadImageFromUrl(url){
-    return new Promise((resolve,reject)=>{
-      const img = new Image();
-      img.crossOrigin = 'anonymous'; // try CORS if allowed
-      img.onload = ()=> resolve(img);
-      img.onerror = (e)=> reject(new Error('Không tải được ảnh từ URL này. Có thể bị chặn CORS.'));
-      img.src = url;
-    });
-  }
-  function resizeCanvasToAspect(){
-    const rect = canvas.parentElement.getBoundingClientRect();
-    const w = rect.width - 2; // within border
-    const h = w / state.aspect;
-    canvas.width = Math.round(w * devicePixelRatio);
-    canvas.height = Math.round(h * devicePixelRatio);
-    canvas.style.height = h + 'px';
-  }
-  function draw(){
-    if(!ctx) return;
-    ctx.save();
-    ctx.setTransform(1,0,0,1,0,0); // reset
-    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    const cw = canvas.width, ch = canvas.height;
+    html += '</div>';
 
-    // Draw photo (under)
-    if(state.img){
-      ctx.save();
-      ctx.translate(cw/2 + state.x*devicePixelRatio, ch/2 + state.y*devicePixelRatio);
-      const rad = state.rotation * Math.PI/180;
-      ctx.rotate(rad);
-      const sx = state.flipH ? -1 : 1;
-      const sy = state.flipV ? -1 : 1;
-      ctx.scale(state.scale*devicePixelRatio*sx, state.scale*devicePixelRatio*sy);
+    html += `
+        <textarea class="result-box" id="resultText" readonly>${winners.join('\n')}</textarea>
+    `;
 
-      // Fit reference size: make the image height match canvas height by default
-      const iw = state.img.naturalWidth;
-      const ih = state.img.naturalHeight;
-      const base = Math.max(cw, ch); // neutral base
-      const scaleBase = Math.max(iw, ih) ? 1 : 1;
+    document.getElementById('result').innerHTML = html;
+}
 
-      // drawImage centered
-      ctx.drawImage(state.img, -iw/2, -ih/2);
-      ctx.restore();
-    }
+function shuffleNames(){
 
-    // Draw frame (over)
-    if(state.frame){
-      ctx.save();
-      ctx.globalAlpha = state.frameOpacity;
-      // Scale frame to fill canvas while preserving aspect
-      const fw = state.frame.naturalWidth;
-      const fh = state.frame.naturalHeight;
-      const frameAspect = fw/fh;
-      let dw = cw, dh = ch;
-      if(Math.abs(frameAspect - (cw/ch)) > 0.0001){
-        // cover behavior
-        const scale = Math.max(cw/fw, ch/fh);
-        dw = fw*scale; dh = fh*scale;
-      }
-      const dx = (cw - dw)/2; const dy = (ch - dh)/2;
-      ctx.drawImage(state.frame, dx, dy, dw, dh);
-      ctx.restore();
-    }
+    const names = getNames();
 
-    ctx.restore();
-  }
+    shuffle(names);
 
-  function fit(mode){
-    if(!state.img) return;
-    const cw = canvas.width, ch = canvas.height;
-    const iw = state.img.naturalWidth, ih = state.img.naturalHeight;
-    const scaleContain = Math.min(cw/iw, ch/ih);
-    const scaleCover = Math.max(cw/iw, ch/ih);
-    state.scale = (mode==='contain'? scaleContain : scaleCover) / devicePixelRatio; // because we multiply by dpr in draw
-    state.x = 0; state.y = 0; state.rotation = 0; scaleEl.value = state.scale;
-    rotEl.value = 0; posX.value = 0; posY.value = 0;
-    draw();
-  }
+    document.getElementById('names').value = names.join('\n');
 
-  function addFrame(src, label){
-    const img = new Image();
-    img.onload = ()=>{
-      state.frames.push({src,label, img});
-      renderFramesGrid();
-    };
-    img.src = src;
-  }
+    drawWheel();
+}
 
-  function renderFramesGrid(){
-    framesGrid.innerHTML = '';
-    state.frames.forEach((f, idx)=>{
-      const div = document.createElement('div');
-      div.className = 'thumb' + (state.frame === f.img ? ' active' : '');
-      const im = document.createElement('img');
-      im.src = f.src;
-      im.alt = f.label || ('Frame ' + (idx+1));
-      div.appendChild(im);
-      div.title = f.label || 'Khung ' + (idx+1);
-      div.onclick = ()=>{ state.frame = f.img; draw(); renderFramesGrid(); };
-      framesGrid.appendChild(div);
-    });
-  }
+function clearResult(){
 
-  function dataUrlFromSvg(svg){
-    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  }
+    document.getElementById('result').innerHTML = `
+        <h2>Kết quả</h2>
+        <div class="winner-list">
+            <div class="winner">Chưa có kết quả</div>
+        </div>
 
-  function initDefaults(){
-    // Two sample frames (SVG with transparent center)
-    const svgGold = `
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'>
-        <defs>
-          <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
-            <stop offset='0%' stop-color='#fef08a'/>
-            <stop offset='100%' stop-color='#f59e0b'/>
-          </linearGradient>
-        </defs>
-        <rect x='10' y='10' width='980' height='980' rx='40' ry='40' fill='none' stroke='url(#g)' stroke-width='40'/>
-        <rect x='60' y='60' width='880' height='880' rx='30' ry='30' fill='none' stroke='white' stroke-opacity='.35' stroke-width='6'/>
-      </svg>`;
-    const svgPolaroid = `
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1200'>
-        <rect x='20' y='20' width='960' height='1160' rx='30' fill='white'/>
-        <rect x='70' y='90' width='860' height='860' fill='none' stroke='#e5e7eb' stroke-width='6'/>
-        <rect x='70' y='90' width='860' height='860' fill='rgba(0,0,0,0)'/>
-      </svg>`;
-    addFrame(dataUrlFromSvg(svgGold), 'Khung vàng bo tròn');
-    addFrame(dataUrlFromSvg(svgPolaroid), 'Khung polaroid');
-  }
+        <textarea class="result-box" id="resultText" readonly>Kết quả sẽ hiển thị ở đây để copy</textarea>
+    `;
+}
 
-  function exportImage(){
-    const longSide = parseInt(resEl.value,10);
-    const aspect = parseFloat(aspectEl.value);
-    const outW = aspect >= 1 ? longSide : Math.round(longSide*aspect);
-    const outH = aspect >= 1 ? Math.round(longSide/aspect) : longSide;
+document.getElementById('names').addEventListener('input', drawWheel);
 
-    const out = document.createElement('canvas');
-    out.width = outW; out.height = outH;
-    const octx = out.getContext('2d');
-
-    // Draw photo with same transforms but mapped to output size
-    const refW = canvas.width; const refH = canvas.height;
-    const scaleFactor = outW / refW; // mapping factor
-
-    // Background transparent
-    octx.clearRect(0,0,outW,outH);
-
-    if(state.img){
-      octx.save();
-      octx.translate(outW/2 + state.x*devicePixelRatio*scaleFactor, outH/2 + state.y*devicePixelRatio*scaleFactor);
-      octx.rotate(state.rotation*Math.PI/180);
-      const sx = state.flipH ? -1 : 1;
-      const sy = state.flipV ? -1 : 1;
-      octx.scale(state.scale*devicePixelRatio*scaleFactor*sx, state.scale*devicePixelRatio*scaleFactor*sy);
-      octx.drawImage(state.img, -state.img.naturalWidth/2, -state.img.naturalHeight/2);
-      octx.restore();
-    }
-
-    if(state.frame){
-      octx.save();
-      octx.globalAlpha = state.frameOpacity;
-      const fw = state.frame.naturalWidth, fh = state.frame.naturalHeight;
-      const fAspect = fw/fh;
-      let dw = outW, dh = outH;
-      if(Math.abs(fAspect - (outW/outH)) > 0.0001){
-        const scale = Math.max(outW/fw, outH/fh);
-        dw = fw*scale; dh = fh*scale;
-      }
-      const dx = (outW - dw)/2; const dy = (outH - dh)/2;
-      octx.drawImage(state.frame, dx, dy, dw, dh);
-      octx.restore();
-    }
-
-    const mime = formatEl.value;
-    const quality = mime === 'image/jpeg' ? 0.95 : 1.0;
-    const url = out.toDataURL(mime, quality);
-
-    const a = document.createElement('a');
-    const ts = new Date().toISOString().replace(/[:.]/g,'');
-    a.download = `ghep-anh-${ts}.${mime.split('/')[1]}`;
-    a.href = url; a.click();
-  }
-
-  // Events
-  window.addEventListener('resize', ()=>{resizeCanvasToAspect(); draw();});
-
-  photoInput.addEventListener('change', async (e)=>{
-    const file = e.target.files?.[0]; if(!file) return;
-    state.img = await loadImageFromFile(file);
-    fit('cover');
-  });
-
-  scaleEl.addEventListener('input', (e)=>{ state.scale = parseFloat(e.target.value); draw(); });
-  rotEl.addEventListener('input', (e)=>{ state.rotation = parseFloat(e.target.value); draw(); });
-  posX.addEventListener('input', (e)=>{ state.x = parseFloat(e.target.value); draw(); });
-  posY.addEventListener('input', (e)=>{ state.y = parseFloat(e.target.value); draw(); });
-  aspectEl.addEventListener('change', ()=>{ state.aspect = parseFloat(aspectEl.value); resizeCanvasToAspect(); draw(); });
-  resEl.addEventListener('change', ()=>{});
-  frameOpacity.addEventListener('input', (e)=>{ state.frameOpacity = parseFloat(e.target.value); draw(); });
-
-  addFrameUrl.addEventListener('click', async ()=>{
-    const url = frameUrl.value.trim(); if(!url) return;
-    try{
-      const img = await loadImageFromUrl(url);
-      state.frames.push({src:url,label:url.split('/').pop(), img});
-      renderFramesGrid();
-    }catch(err){ alert(err.message || 'Không thêm được khung từ URL.'); }
-  });
-
-  frameFile.addEventListener('change', async (e)=>{
-    const file = e.target.files?.[0]; if(!file) return;
-    const img = await loadImageFromFile(file);
-    state.frames.push({src:img.src,label:file.name,img});
-    renderFramesGrid();
-  });
-
-  clearFrame.addEventListener('click', ()=>{ state.frame = null; renderFramesGrid(); draw(); });
-
-  fitContain.addEventListener('click', ()=> fit('contain'));
-  fitCover.addEventListener('click', ()=> fit('cover'));
-  flipH.addEventListener('click', ()=>{ state.flipH = !state.flipH; draw(); });
-  flipV.addEventListener('click', ()=>{ state.flipV = !state.flipV; draw(); });
-
-  downloadBtn.addEventListener('click', exportImage);
-
-  // Pointer interactions (drag/zoom)
-  let dragging = false; let lastX=0,lastY=0; let lockAxis = null; // 'x'|'y'|null
-  canvas.addEventListener('pointerdown', (e)=>{
-    dragging = true; lastX=e.clientX; lastY=e.clientY; canvas.setPointerCapture(e.pointerId);
-    lockAxis = e.shiftKey ? 'x' : null; // start with x; toggled by movement
-  });
-  canvas.addEventListener('pointermove', (e)=>{
-    if(!dragging) return;
-    const dx = (e.clientX - lastX); const dy = (e.clientY - lastY);
-    lastX = e.clientX; lastY = e.clientY;
-    if(e.shiftKey){ // lock one axis – decide by dominant movement first time
-      if(lockAxis===null){ lockAxis = Math.abs(dx)>Math.abs(dy)?'y':'x'; }
-    } else { lockAxis=null; }
-    const mult = 1; // pixels to canvas CSS pixels
-    if(lockAxis==='x'){ state.y += dy*mult; }
-    else if(lockAxis==='y'){ state.x += dx*mult; }
-    else { state.x += dx*mult; state.y += dy*mult; }
-    posX.value = state.x; posY.value = state.y; draw();
-  });
-  window.addEventListener('pointerup', ()=>{ dragging=false; lockAxis=null; });
-  canvas.addEventListener('wheel', (e)=>{
-    e.preventDefault();
-    const delta = Math.sign(e.deltaY);
-    const factor = 1 + (-delta)*0.05;
-    state.scale = Math.min(3, Math.max(0.1, state.scale*factor));
-    scaleEl.value = state.scale; draw();
-  }, {passive:false});
-
-  // Keyboard shortcuts
-  window.addEventListener('keydown', (e)=>{
-    if(e.altKey){
-      if(e.key==='ArrowLeft'){ state.rotation -= 1; }
-      if(e.key==='ArrowRight'){ state.rotation += 1; }
-      rotEl.value = state.rotation; draw();
-    }
-  });
-
-  // Support ?frame=<url>
-  function applyQuery(){
-    const url = new URL(location.href);
-    const f = url.searchParams.get('frame');
-    const ratio = url.searchParams.get('ratio');
-    if(f){ loadImageFromUrl(f).then(img=>{ state.frames.push({src:f,label:'link',img}); state.frame = img; renderFramesGrid(); draw(); }).catch(()=>{}); }
-    if(ratio){ state.aspect = parseFloat(ratio)||1; aspectEl.value = state.aspect; }
-  }
-
-  // Boot
-  state.aspect = parseFloat(aspectEl.value);
-  state.res = parseInt(resEl.value,10);
-  resizeCanvasToAspect();
-  initDefaults();
-  renderFramesGrid();
-  draw();
-  applyQuery();
-})();
+drawWheel();
 </script>
+
 </body>
 </html>
